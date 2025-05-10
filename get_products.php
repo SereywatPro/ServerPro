@@ -16,7 +16,7 @@ try {
 // Use Railway environment variables
 $host = 'tramway.proxy.rlwy.net';
 $port = '31672';
-$dbname = 'shop';
+$dbname = 'railway';
 $user = 'postgres';
 $password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
 
