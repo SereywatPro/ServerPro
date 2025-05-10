@@ -16,7 +16,7 @@ try {
 // Use Railway environment variables
 $host = 'tramway.proxy.rlwy.net';
 $port = '31672';
-$dbname = 'railway';
+$dbname = 'shop';
 $user = 'postgres';
 $password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
 
@@ -30,7 +30,7 @@ $password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
 
     // If this is a direct request to get_products.php, return the products
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $stmt = $pdo->query('SELECT * FROM public.products');
+        $stmt = $pdo->query('SELECT * FROM products');
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($products);
         exit;
