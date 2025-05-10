@@ -30,7 +30,7 @@ $password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
 
     // If this is a direct request to get_products.php, return the products
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $stmt = $pdo->query('SELECT * FROM products');
+        $stmt = $pdo->query('SELECT * FROM public.products');
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($products);
         exit;
