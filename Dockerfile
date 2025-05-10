@@ -9,11 +9,8 @@ RUN apt-get update && apt-get install -y \
     git \
     && docker-php-ext-install pgsql pdo_pgsql
 
-# Enable Apache mod_rewrite (optional, but common)
+# Enable Apache mod_rewrite
 RUN a2enmod rewrite
-
-# Set recommended PHP.ini settings (optional)
-COPY ./php.ini /usr/local/etc/php/
 
 # Set working directory
 WORKDIR /var/www/html
