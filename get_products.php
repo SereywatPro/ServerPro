@@ -14,11 +14,11 @@ try {
  */
 
 // Use Railway environment variables
-    $host = getenv('localhost');
-    $port = getenv('1553');
-    $dbname = getenv('shop');
-    $user = getenv('postgres');
-    $password = getenv('1111');
+$host = 'tramway.proxy.rlwy.net';
+$port = '31672';
+$dbname = 'railway';
+$user = 'postgres';
+$password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
 
     // Use PDO instead of pg_connect() (supports scram-sha-256) (note)
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";

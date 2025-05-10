@@ -1,13 +1,25 @@
-FROM php:8.1-apache
+# Use official PHP image with Apache
+FROM php:8.2-apache
 
-# Install PostgreSQL extension
-RUN docker-php-ext-install pgsql pdo_pgsql
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    unzip \
+    zip \
+    git \
+    && docker-php-ext-install pgsql pdo_pgsql
 
-# Enable Apache mod_rewrite (optional)
+# Enable Apache mod_rewrite (optional, but common)
 RUN a2enmod rewrite
 
-# Copy all backend files to Apache server root
-COPY . /var/www/html/
+# Set recommended PHP.ini settings (optional)
+COPY ./php.ini /usr/local/etc/php/
 
-# Set permissions (optional)
-RUN chown -R www-data:www-data /var/www/html/uploads
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy your app code
+COPY . .
+
+# Expose Apache port
+EXPOSE 80
