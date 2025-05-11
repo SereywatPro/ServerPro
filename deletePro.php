@@ -4,7 +4,7 @@ header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-require_once 'get_products.php'; // connects to database
+require_once 'DB.php'; // connects to database
 
 $response = ['success' => false, 'message' => ''];
 

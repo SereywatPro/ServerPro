@@ -1,35 +1,19 @@
 <?php
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Content-Type: application/json');
+// get_products.php
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
+
+require_once 'db.php';
 
 try {
-    // Db conf
-    $host = 'tramway.proxy.rlwy.net';
-    $port = '31672';
-    $dbname = 'railway'; // or whatever your dbname is in the URL
-    $user = 'postgres';
-    $password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
-
-    // Use PDO instead of pg_connect() (supports scram-sha-256) (note)
-    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
-    $options = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    ];                          
-    // Create PDO connection
-    $pdo = new PDO($dsn, $user, $password, $options);
-
-    // If this is a direct request to get_products.php, return the products
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $stmt = $pdo->query('SELECT * FROM public.products');
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($products);
-        exit;
-    }
+    $stmt = $pdo->query('SELECT * FROM public.products ORDER BY id DESC');
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($products);
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
-    exit;
+    echo json_encode(['error' => 'Error fetching products: ' . $e->getMessage()]);
 }
 ?>
