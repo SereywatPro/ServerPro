@@ -5,26 +5,20 @@ header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
 
 try {
-    // Get DATABASE_URL from environment
-    $url = getenv('DATABASE_URL');
-    if (!$url) {
-        throw new Exception('DATABASE_URL not set in environment variables.');
-    }
+    // Db conf
+    $host = 'tramway.proxy.rlwy.net';
+    $port = '31672';
+    $dbname = 'railway'; // or whatever your dbname is in the URL
+    $user = 'postgres';
+    $password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
 
-    // Parse the URL
-    $db = parse_url($url);
-
-    $host = $db['host'];
-    $port = $db['port'];
-    $user = $db['user'];
-    $pass = $db['pass'];
-    $dbname = ltrim($db['path'], '/');
-
-    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;";
+    // Use PDO instead of pg_connect() (supports scram-sha-256) (note)
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    ];
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    ];                          
+    // Create PDO connection
+    $pdo = new PDO($dsn, $user, $password, $options);
 
     // If this is a direct request to get_products.php, return the products
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -33,9 +27,9 @@ try {
         echo json_encode($products);
         exit;
     }
-} catch (Exception $e) {
+} catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
     exit;
 }
 ?>

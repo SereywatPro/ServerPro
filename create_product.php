@@ -27,9 +27,9 @@ try {
         }
     }
 
-    $sql = "INSERT INTO products (name, price, category, image_url) VALUES (:name, :price, :category, :image_url)";
+    $sql = "INSERT INTO products (name, category, image_url,price) VALUES (:name, :category, :image_url, :price)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['name' => $name, 'price' => $price, 'category' => $category, 'image_url' => $imagePath]);
+    $stmt->execute(['name' => $name, 'category' => $category, 'image_url' => $imagePath, 'price' => $price]);
     
     $response['success'] = true;
     $response['message'] = 'Product added successfully';
