@@ -5,28 +5,26 @@ header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
 
 try {
-    // Db conf
-    /* $host = 'localhost';
-    $port = '1553'; // port of PostgreSQL server
-    $dbname = 'shop';
-    $user = 'postgres';
-    $password = '1111';
- */
+    // Get DATABASE_URL from environment
+    $url = getenv('DATABASE_URL');
+    if (!$url) {
+        throw new Exception('DATABASE_URL not set in environment variables.');
+    }
 
-// Use Railway environment variables
-$host = 'tramway.proxy.rlwy.net';
-$port = '31672';
-$dbname = 'railway';
-$user = 'postgres';
-$password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
+    // Parse the URL
+    $db = parse_url($url);
 
-    // Use PDO instead of pg_connect() (supports scram-sha-256) (note)
-    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+    $host = $db['host'];
+    $port = $db['port'];
+    $user = $db['user'];
+    $pass = $db['pass'];
+    $dbname = ltrim($db['path'], '/');
+
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;";
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     ];
-    // Create PDO connection
-    $pdo = new PDO($dsn, $user, $password, $options);
+    $pdo = new PDO($dsn, $user, $pass, $options);
 
     // If this is a direct request to get_products.php, return the products
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -35,9 +33,9 @@ $password = 'YdohTFxAnrEAYERDKAcnPGKQstjIstyc';
         echo json_encode($products);
         exit;
     }
-} catch (PDOException $e) {
+} catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
     exit;
 }
 ?>
