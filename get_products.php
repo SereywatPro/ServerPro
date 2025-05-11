@@ -9,7 +9,7 @@ header("Content-Type: application/json");
 require_once 'DB.php';
 
 try {
-    $stmt = $pdo->query('SELECT * FROM public.products ORDER BY id DESC');
+    $stmt = $pdo->query('SELECT * FROM public.products');
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($products);
 } catch (PDOException $e) {
