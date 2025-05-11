@@ -15,7 +15,8 @@ try {
     $price = $_POST['price'] ?? '';
     $price = is_numeric($price) ? $price : 0;
     $category = $_POST['category'] ?? '';
-    $imagePath = '';
+    /* $imagePath = '';  // using with folder upload/ */
+    $imagePath = $imageName; // just "image.png"
 
     // if the product is exits
     if(!$id) throw new Exception('Product ID is required');
@@ -30,7 +31,7 @@ try {
     }
 
     // if the image is exits
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+ /*    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $targetDir = "uploads/";
 
         // Make sure uploads directory exists
@@ -55,7 +56,32 @@ try {
     } else {
         // No new image sent — keep existing image
         $imagePath = $product['image_url'];
+    } */
+
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $targetDir = "uploads/";
+    
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+    
+        $imageName = uniqid() . "_" . basename($_FILES["image"]["name"]); // optional: unique filename
+        $targetFile = $targetDir . $imageName;
+    
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
+            $imagePath = $imageName; // Only save filename in DB
+    
+            // Delete old image if needed
+            if (!empty($product['image_url']) && file_exists($targetDir . $product['image_url'])) {
+                unlink($targetDir . $product['image_url']);
+            }
+        } else {
+            throw new Exception("Failed to upload image.");
+        }
+    } else {
+        $imagePath = $product['image_url'] ?? '';
     }
+    
 
     // update script query
     $sql = "UPDATE products SET name = :name, price = :price, category = :category, image_url = :image_url WHERE id = :id";
@@ -70,6 +96,8 @@ try {
 
     $response["success"] = true;
     $response['message'] = "Product updated successfully";
+
+
 
 } catch(Exception $err) {
     $response["success"] = false;
