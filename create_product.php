@@ -2,29 +2,33 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// ✅ Allow CORS
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
+
+// ✅ Handle OPTIONS preflight request (from React fetch)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 require_once 'DB.php';
 
 $response = ['success' => false, 'message' => ''];
 
 try {
-    // ✅ First, make sure it’s a POST request
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         echo json_encode(['success' => false, 'message' => 'Invalid request method']);
         exit;
     }
 
-    // ✅ Validate required fields before using them
     if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['price'])) {
         echo json_encode(['success' => false, 'message' => 'Missing required fields']);
         exit;
     }
 
-    // ✅ Now it's safe to read the data
     $name = $_POST['name'];
     $price = is_numeric($_POST['price']) ? $_POST['price'] : 0;
     $category = $_POST['category'];
@@ -65,4 +69,3 @@ try {
 
 echo json_encode($response);
 exit;
-?>
