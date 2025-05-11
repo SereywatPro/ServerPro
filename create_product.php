@@ -27,14 +27,16 @@ try {
         }
     }
 
-    $sql = "INSERT INTO products (name, category, image_url,price) VALUES (:name, :category, :image_url, :price)";
+    $sql = "INSERT INTO products (name, category, image_url ,price) VALUES (:name, :category, :image_url, :price)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['name' => $name, 'category' => $category, 'image_url' => $imagePath, 'price' => $price]);
     
     $response['success'] = true;
     $response['message'] = 'Product added successfully';
 } catch (Exception $e) {
-    $response['message'] = $e->getMessage();
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    exit;
 }
 
 echo json_encode($response);
