@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-require_once 'db.php';
+require_once 'DB.php';
 
 try {
     $stmt = $pdo->query('SELECT * FROM public.products ORDER BY id DESC');
