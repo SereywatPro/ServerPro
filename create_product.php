@@ -16,6 +16,10 @@ try {
     $price = is_numeric($_POST['price'] ?? '') ? $_POST['price'] : 0;
     $category = $_POST['category'] ?? '';
     $imagePath = '';
+    
+    if (empty($name) || empty($price) || empty($category)) {
+    throw new Exception('All fields are required.');
+}
 
 if (isset($_FILES['image'])) {
     if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
