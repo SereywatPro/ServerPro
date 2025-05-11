@@ -20,3 +20,5 @@ COPY . .
 
 # Expose Apache port
 EXPOSE 80
+
+RUN mkdir -p /var/www/html/uploads && chmod 777 /var/www/html/uploads
