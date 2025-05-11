@@ -12,9 +12,22 @@ require_once 'DB.php';
 $response = ['success' => false, 'message' => ''];
 
 try {
-    $name = $_POST['name'] ?? '';
-    $price = is_numeric($_POST['price'] ?? '') ? $_POST['price'] : 0;
-    $category = $_POST['category'] ?? '';
+    // ✅ First, make sure it’s a POST request
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+        exit;
+    }
+
+    // ✅ Validate required fields before using them
+    if (empty($_POST['name']) || empty($_POST['category']) || empty($_POST['price'])) {
+        echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+        exit;
+    }
+
+    // ✅ Now it's safe to read the data
+    $name = $_POST['name'];
+    $price = is_numeric($_POST['price']) ? $_POST['price'] : 0;
+    $category = $_POST['category'];
     $imagePath = '';
 
     if (isset($_FILES['image'])) {
@@ -22,6 +35,7 @@ try {
         if (!file_exists($targetDir)) {
             mkdir($targetDir, 0755, true);
         }
+
         $imageName = basename($_FILES["image"]["name"]);
         $targetFile = $targetDir . $imageName;
 
