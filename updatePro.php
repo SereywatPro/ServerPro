@@ -16,7 +16,6 @@ try {
     $price = is_numeric($price) ? $price : 0;
     $category = $_POST['category'] ?? '';
     /* $imagePath = '';  // using with folder upload/ */
-    $imagePath = $imageName; // just "image.png"
 
     // if the product is exits
     if(!$id) throw new Exception('Product ID is required');
@@ -26,9 +25,8 @@ try {
     $stmt->execute(['id' => $id]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$product) {
-        throw new Exception('Product not found');
-    }
+    if (!$product) throw new Exception('Product not found');
+    
 
     // if the image is exits
  /*    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -58,29 +56,32 @@ try {
         $imagePath = $product['image_url'];
     } */
 
+    $imagePath = $product['image_url'] ?? ''; // Default to existing image
+
+    // Handle new image upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $targetDir = "uploads/";
-    
+
         if (!file_exists($targetDir)) {
             mkdir($targetDir, 0755, true);
         }
-    
-        $imageName = uniqid() . "_" . basename($_FILES["image"]["name"]); // optional: unique filename
+
+        $imageName = uniqid() . "_" . basename($_FILES["image"]["name"]);
         $targetFile = $targetDir . $imageName;
-    
+
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            $imagePath = $imageName; // Only save filename in DB
-    
-            // Delete old image if needed
-            if (!empty($product['image_url']) && file_exists($targetDir . $product['image_url'])) {
-                unlink($targetDir . $product['image_url']);
+            $imagePath = $imageName;
+
+            // Delete old image
+            $oldImagePath = $targetDir . $product['image_url'];
+            if (!empty($product['image_url']) && file_exists($oldImagePath)) {
+                unlink($oldImagePath);
             }
         } else {
             throw new Exception("Failed to upload image.");
         }
-    } else {
-        $imagePath = $product['image_url'] ?? '';
     }
+
     
 
     // update script query
@@ -105,4 +106,5 @@ try {
 }
 
 echo json_encode($response);
+exit;
 ?>
